@@ -16,6 +16,7 @@ import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 import gui.panel.BoardPanel;
 import gui.panel.ControlPanel;
+import static javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE;
 import logic.Board;
 import logic.Square;
  
@@ -27,6 +28,7 @@ public class Gui extends JFrame implements ICommon, ITrans {
   private BoardPanel boardPanel;
   private ControlPanel controlPanel;
   private Board board;
+  
  
   public Gui() {
     board = new Board();
@@ -43,11 +45,6 @@ public class Gui extends JFrame implements ICommon, ITrans {
     setResizable(false);
     setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
     setLayout(null);
-    try {
-      UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
   }
     @Override
   public void addComp() {
@@ -103,8 +100,19 @@ public class Gui extends JFrame implements ICommon, ITrans {
   @Override
   public void restart() {
     board = new Board();
+    board.gameSteps.empty();
     controlPanel.second = -1;
     controlPanel.timer.start();
     boardPanel.updateBoard();
   }
+
+  @Override
+    public void undo() {
+        board.undo();
+        boardPanel.updateBoard();
+        int numSquareClosed = boardPanel.getNumSquareClosed();
+        controlPanel.updateStatus(numSquareClosed);
+    }
+
+
 }

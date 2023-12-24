@@ -28,6 +28,7 @@ public class ControlPanel extends JPanel implements ICommon {
   private JLabel lbNotify;
   private JButton btnRestart;
   private ITrans listener;
+  private JButton btnRedo;
   private JLabel lbTimer;
   public Timer timer;
   public int second;
@@ -64,6 +65,12 @@ public class ControlPanel extends JPanel implements ICommon {
     btnRestart.setBounds(490, 10, 100, 40);
     add(btnRestart);
     
+    btnRedo = new JButton();
+    btnRedo.setFont(font);
+    btnRedo.setText("Undo");
+    btnRedo.setBounds(590, 10, 100, 40);
+    add(btnRedo);
+    
     lbTimer = new JLabel("Time: 0:0");
     lbTimer.setFont(font);
     lbTimer.setBounds(220, 10, 200, 40);
@@ -84,7 +91,13 @@ public class ControlPanel extends JPanel implements ICommon {
         lbNotify.setText("");
       }
     });
-    
+    btnRedo.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        listener.undo();
+        lbNotify.setText("");
+      }
+    });
   }
  
   public void addListener(ITrans event) {

@@ -16,4 +16,5 @@ public interface ITrans {
   void play(int x, int y);
   void target(int x, int y);
   void restart();
+  void undo();
 }
