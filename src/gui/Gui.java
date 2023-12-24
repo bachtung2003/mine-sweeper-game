@@ -85,7 +85,10 @@ public class Gui extends JFrame implements ICommon, ITrans {
   @Override
   public void play(int x, int y) {
     boolean check = board.play(x, y);
-    if (!check) { board.showAllSquares(); }
+    if (!check) { 
+        board.showAllSquares(); 
+        controlPanel.timer.stop();
+    }
     boardPanel.updateBoard();
     // cập nhật số ô chưa mở vào controlPanel
     int numSquareClosed = boardPanel.getNumSquareClosed();
@@ -100,6 +103,8 @@ public class Gui extends JFrame implements ICommon, ITrans {
   @Override
   public void restart() {
     board = new Board();
+    controlPanel.second = -1;
+    controlPanel.timer.start();
     boardPanel.updateBoard();
   }
 }

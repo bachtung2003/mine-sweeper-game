@@ -17,6 +17,7 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import gui.ICommon;
 import gui.ITrans;
+import javax.swing.Timer;
 import logic.Board;
  
 public class ControlPanel extends JPanel implements ICommon {
@@ -27,6 +28,10 @@ public class ControlPanel extends JPanel implements ICommon {
   private JLabel lbNotify;
   private JButton btnRestart;
   private ITrans listener;
+  private JLabel lbTimer;
+  public Timer timer;
+  public int second;
+  public int minute;
  
   public ControlPanel() {
     initComp();
@@ -50,14 +55,23 @@ public class ControlPanel extends JPanel implements ICommon {
  
     lbNotify = new JLabel();
     lbNotify.setFont(font);
-    lbNotify.setBounds(270, 10, 200, 40);
+    lbNotify.setBounds(350, 10, 200, 40);
     add(lbNotify);
- 
+
     btnRestart = new JButton();
     btnRestart.setFont(font);
-    btnRestart.setText("Chơi lại");
-    btnRestart.setBounds(490, 10, 200, 40);
+    btnRestart.setText("Again");
+    btnRestart.setBounds(490, 10, 100, 40);
     add(btnRestart);
+    
+    lbTimer = new JLabel("Time: 0:0");
+    lbTimer.setFont(font);
+    lbTimer.setBounds(220, 10, 200, 40);
+    add(lbTimer);
+    second = 0;
+    minute = 0;
+    timer();
+    timer.start();
   }
  
   @Override
@@ -70,6 +84,7 @@ public class ControlPanel extends JPanel implements ICommon {
         lbNotify.setText("");
       }
     });
+    
   }
  
   public void addListener(ITrans event) {
@@ -85,4 +100,21 @@ public class ControlPanel extends JPanel implements ICommon {
       lbNotify.setForeground(Color.red);
     }
   }
+ 
+ public void timer(){
+     timer = new Timer(1000, new ActionListener(){
+         
+         @Override
+         public void actionPerformed(ActionEvent e){
+             
+             second++;
+             lbTimer.setText("Time: "+minute+":"+second);
+             if(second==60){
+                 second = 0;
+                 minute++;
+                 lbTimer.setText("Time: "+minute+":"+second);
+             }
+         }
+     });
+ }
 }
