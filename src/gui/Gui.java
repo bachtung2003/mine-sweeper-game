@@ -108,10 +108,12 @@ public class Gui extends JFrame implements ICommon, ITrans {
 
   @Override
     public void undo() {
+        if(board.gameState == true){
         board.undo();
         boardPanel.updateBoard();
         int numSquareClosed = boardPanel.getNumSquareClosed();
         controlPanel.updateStatus(numSquareClosed);
+        }
     }
 
 

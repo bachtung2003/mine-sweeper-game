@@ -7,10 +7,7 @@ package logic;
 import java.util.Random;
 import java.util.Stack;
 
-/**
- *
- * @author tranbachtung
- */
+
 public class Board {
 
     public static final int NUM_ROWS = 15;
@@ -19,8 +16,10 @@ public class Board {
     public int count = -1;
 
     public Square[][] square;
-    public Stack<Integer> gameSteps = new Stack();
-
+    public Stack gameSteps = new Stack();
+    public Stack gameCounts = new Stack();
+    public boolean gameState = true;
+    
     public Board() {
         square = new Square[NUM_ROWS][NUM_COLUMNS];
         for (int i = 0; i < square.length; i++) {
@@ -70,85 +69,90 @@ public class Board {
     }
 
     private int genRan(int range) {
-        Random rd = new Random();
-        return rd.nextInt(range);
-    }
-
-    public Square[][] getListSquare() {
-        return square;
-    }
-
-    public boolean play(int x, int y) {
-        gameSteps.push(x * 10 * NUM_COLUMNS + y);
-        if (!square[x][y].isOpen()) {
-            square[x][y].setOpen(true);
-
-            if (square[x][y].isHasMine()) {
-                return false;
-            }
-            if (square[x][y].getNumMineAround() == 0) {
-                for (int m = -1; m <= 1; m++) {
-                    if (x + m < 0) {
-                        m++;
-                    }
-                    if (x + m > NUM_ROWS - 1) {
-                        break;
-                    }
-                    for (int n = -1; n <= 1; n++) {
-                        if (y + n < 0) {
-                            n++;
-                        }
-                        if (y + n > NUM_COLUMNS - 1) {
-                            break;
-                        }
-                        count++;
-                        play(x + m, y + n);
-                    }
-                }
-            }
+    Random rd = new Random();
+    return rd.nextInt(range);
+  }
+ 
+  public Square[][] getListSquare() {
+    return square;
+  }
+ 
+  public boolean play(int x, int y) {
+    gameSteps.push(x*10*NUM_COLUMNS+y);
+    gameCounts.push(count);
+    if (!square[x][y].isOpen()) {
+      square[x][y].setOpen(true);
+      
+      if (square[x][y].isHasMine()) {
+        gameState = false;
+        return false;
+      }
+      if (square[x][y].getNumMineAround() == 0) {
+        for (int m = -1; m <= 1; m++) {
+          if (x + m < 0) { m++; }
+          if (x + m > NUM_ROWS - 1) { break; }
+          for (int n = -1; n <= 1; n++) {
+            if (y + n < 0) { n++; }
+            if (y + n > NUM_COLUMNS - 1) { break; }
+            count++;
+            play(x + m, y + n);
+          }
         }
-        return true;
-    }
-
-    public void target(int x, int y) {
-        if (!square[x][y].isOpen()) {
-            if (!square[x][y].isTarget()) {
-                square[x][y].setTarget(true);
-            } else {
-                square[x][y].setTarget(false);
-            }
+      }
+        if(count!=-1){
+        gameCounts.pop();
+        gameCounts.push(count);
+        count = -1;
         }
     }
-
-    public void showAllSquares() {
-        for (int i = 0; i < square.length; i++) {
-            for (int j = 0; j < square[0].length; j++) {
-                square[i][j].setOpen(true);
-            }
-        }
+    return true;
+  }
+  
+ 
+  public void target(int x, int y) {
+    if (!square[x][y].isOpen()) {
+        gameSteps.push(x*10*NUM_COLUMNS+y);
+        gameCounts.push(count);
+      if (!square[x][y].isTarget()) {
+        square[x][y].setTarget(true);
+      } else {
+        square[x][y].setTarget(false);
+      }
     }
-
-    public void undo() {
-        int x, y;
-        if (!gameSteps.empty()) {
-            if (count >= 0) {
-                int i = gameSteps.pop();
-                x = i / (10 * NUM_COLUMNS);
-                y = i - (x * (10 * NUM_COLUMNS));
-                if (square[x][y].isOpen()) {
-                    square[x][y].setOpen(false);
-                }
-                count--;
-                undo();
-            } else if (count < 0) {
-                int i = gameSteps.pop();
-                x = i / (10 * NUM_COLUMNS);
-                y = i - (x * (10 * NUM_COLUMNS));
-                if (square[x][y].isOpen()) {
-                    square[x][y].setOpen(false);
-                }
-            }
-        }
+  }
+ 
+  public void showAllSquares() {
+    for (int i = 0; i < square.length; i++) {
+      for (int j = 0; j < square[0].length; j++) {
+        square[i][j].setOpen(true);
+      }
     }
-
+  }
+  
+  public void undo(){
+      int x,y;
+      if(!gameSteps.empty()){
+          int count = (int) gameCounts.pop();
+          int i = (Integer)gameSteps.pop();
+          x = i/(10*NUM_COLUMNS);
+          y = i - (x*(10*NUM_COLUMNS));
+            if(count>=0){
+                  if (square[x][y].isOpen()) {
+                   square[x][y].setOpen(false);
+                  }
+                  count--;
+                  undo();
+            }
+            else if(count<0){
+                  x = i/(10*NUM_COLUMNS);
+                   y = i - (x*(10*NUM_COLUMNS));
+                  if (square[x][y].isOpen()) {
+                   square[x][y].setOpen(false);
+                  }else if (square[x][y].isTarget()){
+                   square[x][y].setTarget(false);
+                  }
+          }
+      }
+  }
+  
 }
