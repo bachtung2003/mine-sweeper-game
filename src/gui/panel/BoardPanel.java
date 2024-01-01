@@ -19,8 +19,11 @@ import javax.swing.JLabel;
 import javax.swing.border.Border;
 import gui.ICommon;
 import gui.ITrans;
+import java.util.Stack;
+
 import javax.swing.Timer;
 import logic.Board;
+import logic.Sound;
 import logic.Square;
  
 public class BoardPanel extends JPanel implements ICommon {
@@ -29,11 +32,14 @@ public class BoardPanel extends JPanel implements ICommon {
   private ITrans listener;
   private int numSquareClosed;
   private Timer timer;
+  private Sound sound = new Sound();
+
  
   public BoardPanel() {
     initComp();
     addComp();
     addEvent();
+    
   }
  
   @Override
@@ -54,6 +60,7 @@ public class BoardPanel extends JPanel implements ICommon {
         lbSquare[i][j].setHorizontalAlignment(JLabel.CENTER);
         lbSquare[i][j].setVerticalAlignment(JLabel.CENTER);
         add(lbSquare[i][j]);
+       
       }
     }
   }
@@ -74,6 +81,7 @@ public class BoardPanel extends JPanel implements ICommon {
             }
           }
         });
+
       }
     }
   }
@@ -82,10 +90,11 @@ public class BoardPanel extends JPanel implements ICommon {
     listener = event;
   }
   // cập nhật hiển thị
-  public void updateBoard() {
+  public void updateBoard(boolean isHardMode) {
     Font font = new Font("VNI", Font.PLAIN, 20);
     numSquareClosed = 0;
     Square[][] listSquare = listener.getListSquare();
+    int numMines = isHardMode ? Board.NUM_ROWS * Board.NUM_COLUMNS / 3 : Board.NUM_ROWS * Board.NUM_COLUMNS / 5;
     for (int i = 0; i < listSquare.length; i++) {
       for (int j = 0; j < listSquare[0].length; j++) {
         lbSquare[i][j].setFont(font);
@@ -146,13 +155,31 @@ public class BoardPanel extends JPanel implements ICommon {
   // giúp lưu được chỉ số hàng, cột của label đó ở trong GridLayout
   // vì ko thể truyền giá trị i, j vào bên trong phương thức addMouseListener
   private class Label extends JLabel {
+
+      private Label() {
+      }
     private static final long serialVersionUID = 6099893043079770073L;
     private int x;
     private int y;
   }
-   
+  
+
   public int getNumSquareClosed() {
     return numSquareClosed;
   }
-
+  
+    public void playMusic(int i) {
+      sound.setFile(i);
+      sound.play();
+      sound.loop();
+  }
+  
+  public void stopMusic() {
+      sound.stop();
+  }
+  
+  public void playSE(int i) {
+      sound.setFile(i);
+      sound.play();
+  }
 }

@@ -16,7 +16,6 @@ import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 import gui.panel.BoardPanel;
 import gui.panel.ControlPanel;
-import static javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE;
 import logic.Board;
 import logic.Square;
  
@@ -28,14 +27,27 @@ public class Gui extends JFrame implements ICommon, ITrans {
   private BoardPanel boardPanel;
   private ControlPanel controlPanel;
   private Board board;
-  
+  private boolean isHardMode;
+  BoardPanel bp = new BoardPanel();
  
-  public Gui() {
-    board = new Board();
+  public Gui(boolean isHardMode) {
+    board = new Board(isHardMode);
     initComp();
     addComp();
     addEvent();
   }
+  public void openStartWindow() {
+    StartWindow startWindow = new StartWindow();
+    startWindow.setVisible(true);
+    dispose(); // Đóng cửa sổ hiện tại
+}
+  public void setHardMode(boolean hardMode) {
+        this.isHardMode = hardMode;
+    }
+
+    public boolean isHardMode() {
+        return isHardMode;
+    }
  
   @Override
   public void initComp() {
@@ -80,39 +92,59 @@ public class Gui extends JFrame implements ICommon, ITrans {
   }
  
   @Override
-  public void play(int x, int y) {
+public void play(int x, int y) {
     boolean check = board.play(x, y);
+    
     if (!check) { 
-        board.showAllSquares(); 
+        board.showAllSquares();
         controlPanel.timer.stop();
+        bp.playSE(1);
+    }else{
+        bp.playSE(2);
     }
-    boardPanel.updateBoard();
+
+    boolean isHardMode = true; // Thay bằng cách lấy thông tin từ cửa sổ "START" khi người chơi chọn
+    boardPanel.updateBoard(isHardMode);
+
     // cập nhật số ô chưa mở vào controlPanel
     int numSquareClosed = boardPanel.getNumSquareClosed();
     controlPanel.updateStatus(numSquareClosed);
-  }
- @Override
-  public void target(int x, int y) {
+}
+ // Trong class Gui
+@Override
+public void target(int x, int y) {
+    bp.playSE(2);
     board.target(x, y);
-    boardPanel.updateBoard();
-  }
+    boolean isHardMode = true; // Thay bằng cách lấy thông tin từ cửa sổ "START" khi người chơi chọn
+    boardPanel.updateBoard(isHardMode);
+}
+
  
-  @Override
-  public void restart() {
-    board = new Board();
-    board.gameSteps.empty();
+  // Trong class Gui
+@Override
+public void restart() {
+    bp.playSE(0);
     controlPanel.second = -1;
     controlPanel.timer.start();
-    boardPanel.updateBoard();
-  }
+    board.gameState = true;
+    openStartWindow(); 
+}
 
-  @Override
-    public void undo() {
-        board.undo();
-        boardPanel.updateBoard();
-        int numSquareClosed = boardPanel.getNumSquareClosed();
-        controlPanel.updateStatus(numSquareClosed);
+ @Override
+public void undo() {
+    if(board.gameState == true){
+    board.undo();
+    boolean isHardMode = true; // Thay bằng cách lấy thông tin từ cửa sổ "START" khi người chơi chọn
+    boardPanel.updateBoard(isHardMode);
+    int numSquareClosed = boardPanel.getNumSquareClosed();
+    controlPanel.updateStatus(numSquareClosed);
     }
+}
 
-
+   public void setDifficulty(boolean isHardMode) {
+        // Xử lý khi chọn chế độ "Dễ" hoặc "Khó"
+        // Cập nhật thông tin vào BoardPanel
+        boardPanel.updateBoard(isHardMode);
+        
+    }
 }
