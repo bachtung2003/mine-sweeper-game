@@ -1,7 +1,6 @@
 # MineSweeper Game
 
 
-### HCMIU - Algorithms & Data Structures - Semester 1 (2023 - 2024)
 ##### Topic Project: MineSweeper Game
 
 ![image](https://github.com/bachtung2003/mine-sweeper-game/assets/91307850/51e6f412-2b2a-47e0-91af-a184a1533f9f)
